@@ -1,22 +1,22 @@
 import { Component, Input } from '@angular/core';
-import { Row } from './board';
+import { Row, PLAYER, COMPUTER } from './board';
 
 @Component({
   selector: 'game-row',
   template: `
-    <td *ngFor="let cell of row.cells" [style.background-color]="owner()"></td>
+    <td *ngFor="let cell of row.cells" [style.background-color]="owner(cell)"></td>
    `
 })
 export class RowComponent {
     @Input()
     row: Row;
 
-    owner(): void {
+    owner(cell): void {
         var background = "lightblue";
-        if(this.row.owner === 0 ) {
+        if(cell.owner === COMPUTER ) {
             //computer player
             background = "yellow";
-        } else if (this.row.owner === 1) {
+        } else if (cell.owner === PLAYER) {
             //human player
             background = "red";
         }

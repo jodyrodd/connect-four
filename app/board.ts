@@ -1,3 +1,7 @@
+export const UNCLAIMED = -1;
+export const PLAYER = 1;
+export const COMPUTER = 0;
+
 export class Cell {
     row: number
     col: number
@@ -6,7 +10,7 @@ export class Cell {
     constructor(row,col) {
         this.row = row;
         this.col = col;
-        this.owner = -1;
+        this.owner = UNCLAIMED;
     }
 
 }
@@ -43,19 +47,41 @@ export class Board {
         ]
     }
 
-    playerMove(col) {
-        console.log("Player Move " + col);
-        this.move(1, col);
+    getOwner(row, col) {
+        return this.rows[row].cells[col].owner;
     }
 
-    computerMove(col) {
+    setOwner(row, col, owner) {
+        this.rows[row].cells[col].owner = owner;
+    }
+
+    playerMove(col) {
+        console.log("Player Move " + col);
+        this.move(PLAYER, col);
+        this.computerMove();
+    }
+
+    computerMove() {
+        var col = 0;
         console.log("Computer Move " + col);
-        this.move(0, col);
+        this.move(COMPUTER, col);
     }
 
     move(owner, col) {
         console.log("Move received player - " + owner + " column - " + col);
+        for(var i=5; i >= 0; i--) {
+            if(this.getOwner(i, col) === UNCLAIMED) {
+                //unowned cell
+                console.log("empty cell at row=" + i + ", col = " col);
+                this.setOwner(i, col, owner);
+                break;
+            }
+        }
+        this.checkForWin();
+    }
 
+    checkForWin() {
+        console.log("checking for a win");
     }
 
 }
