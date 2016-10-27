@@ -11,13 +11,11 @@ export class RowComponent {
     @Input()
     row: Row;
 
-    owner(cell): void {
+    owner(cell) {
         var background = "lightblue";
         if(cell.owner === COMPUTER ) {
-            //computer player
             background = "yellow";
         } else if (cell.owner === PLAYER) {
-            //human player
             background = "red";
         }
         return background;

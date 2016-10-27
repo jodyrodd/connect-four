@@ -29,10 +29,14 @@ const COLUMNS: Column[] = [
   `
 })
 export class HeadComponent {
+    @Input()
+    gameActive: boolean;
     @Output() notifyParent: EventEmitter<any> = new EventEmitter();
     columns = COLUMNS;
 
+
     onClick(column): void {
+        if(!this.gameActive) return;
         console.log("Column clicked - " + column.id);
         this.notifyParent.emit(column.id);
     }
