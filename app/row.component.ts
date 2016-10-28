@@ -8,8 +8,7 @@ import { Row, PLAYER, COMPUTER } from './board';
    `
 })
 export class RowComponent {
-    @Input()
-    row: Row;
+    @Input() row: Row;
 
     owner(cell) {
         var background = "lightblue";

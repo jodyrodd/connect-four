@@ -3,12 +3,18 @@ import { Board, UNCLAIMED, PLAYER, COMPUTER } from './board';
 export class AiPlayer {
     maxDepth = 8;
     iterations = 0;
+    evaulatedBoards = {};
 
-    getMove(gameState: Board) {
-        this.iterations = 0;
-        let result = this.maxPlay(gameState);
-        console.log("Iterations run = " + this.iterations);
-        return result["move"];
+    move(gameState: Board) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() {
+                this.iterations = 0;
+                this.evaulatedBoards = {};
+                let result = this.maxPlay(gameState);
+                console.log("Iterations run = " + this.iterations);
+                gameState.computerMove(result["move"]);
+            }, 500);
+        });
     }
 
     cellsPerCol(gameState: Board, col) {
@@ -31,6 +37,10 @@ export class AiPlayer {
     }
 
     maxPlay(gameState: Board, depth = this.maxDepth, alpha = undefined, beta = undefined): Object {
+        let rtn = this.evaulatedBoards["MAX"+gameState.serializeBoard()];
+        if(rtn !== undefined) {
+            return rtn;
+        }
         let availableMoves = this.concentrationMoves(gameState);
 
         let score = gameState.scoreBoard();
@@ -57,14 +67,22 @@ export class AiPlayer {
             }
 
             if(alpha >= beta) {
-                return {move: maxMove, score: maxScore};
+                rtn = {move: maxMove, score: maxScore};
+                this.evaulatedBoards["MAX"+gameState.serializeBoard()] = rtn;
+                return rtn;
             }
         }
-        return {move: maxMove, score: maxScore};
+        rtn = {move: maxMove, score: maxScore};
+        this.evaulatedBoards["MAX"+gameState.serializeBoard()] = rtn;
+        return rtn;
     }
 
     minPlay(gameState: Board, depth, alpha, beta): Object {
-       let availableMoves = this.concentrationMoves(gameState);
+        let rtn = this.evaulatedBoards["MIN"+gameState.serializeBoard()];
+        if(rtn !== undefined) {
+            return rtn;
+        }
+        let availableMoves = this.concentrationMoves(gameState);
 
         let score = gameState.scoreBoard();
 
@@ -88,10 +106,14 @@ export class AiPlayer {
             }
 
             if(alpha >= beta) {
-                return {move: minMove, score: minScore};
+                rtn = {move: minMove, score: minScore};
+                this.evaulatedBoards["MIN"+gameState.serializeBoard()] = rtn;
+                return rtn;
             }
         }
-        return {move: minMove, score: minScore};
+        rtn = {move: minMove, score: minScore};
+        this.evaulatedBoards["MIN"+gameState.serializeBoard()] = rtn;
+        return rtn;
     }
 
 }

@@ -1,5 +1,5 @@
-export const UNCLAIMED = 0;
-export const PLAYER = -1;
+export const UNCLAIMED = -1;
+export const PLAYER = 0;
 export const COMPUTER = 1;
 
 export class Cell {
@@ -41,6 +41,7 @@ export class Board {
     winCount = 4;
     winner: string;
     currentPlayer: number;
+    currentPlayerText: string;
     maxScore = 10000;
 
     constructor() {
@@ -49,6 +50,8 @@ export class Board {
             rows.push(new Row)
         }
         this.rows = rows;
+        this.currentPlayer = PLAYER;
+        this.setCurrentPlayerText();
     }
 
     copy() {
@@ -85,7 +88,26 @@ export class Board {
                 this.setOwner(row, col, UNCLAIMED);
             }
         }
+        this.currentPlayer = PLAYER;
         this.winner = undefined;
+    }
+
+    changePlayer() {
+        this.currentPlayer = this.currentPlayer % 2 ? PLAYER : COMPUTER;
+        this.setCurrentPlayerText();
+    }
+
+    setCurrentPlayerText() {
+      let curPlayer = "";
+      switch(this.currentPlayer) {
+        case PLAYER:
+          curPlayer = "Player";
+          break;
+        case COMPUTER:
+          curPlayer = "Computer";
+          break;
+      }
+      this.currentPlayerText = curPlayer;
     }
 
     availableMoves() {
@@ -106,11 +128,12 @@ export class Board {
     playerMove(col) {
         if(!this.validMove(col)) return false;
         this.move(PLAYER, col);
-        return true;
+        this.changePlayer();
     }
 
     computerMove(col) {
         this.move(COMPUTER, col);
+        this.changePlayer();
     }
 
     move(owner, col) {

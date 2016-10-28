@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { PLAYER } form './board'
 
 export class Column {
     id: number;
@@ -24,19 +25,21 @@ const COLUMNS: Column[] = [
   selector: 'game-head',
   template: `
     <tr>
-      <td *ngFor="let column of columns" innerHtml="{{column.button_text}}" (click)="onClick(column)"></td>
+      <td *ngFor="let column of columns" (click)="onClick(column)">
+          <span *ngIf="waitingForPlayer" innerHtml="{{column.button_text}}"></span>
+      </td>
     </tr>
   `
 })
 export class HeadComponent {
-    @Input()
-    gameActive: boolean;
+    @Input() gameActive: boolean;
+    @Input() waitingForPlayer: number = true;
     @Output() notifyParent: EventEmitter<any> = new EventEmitter();
     columns = COLUMNS;
 
 
     onClick(column): void {
-        if(!this.gameActive) return;
+        if(!this.gameActive || !this.waitingForPlayer) return;
         console.log("Column clicked - " + column.id);
         this.notifyParent.emit(column.id);
     }

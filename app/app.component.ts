@@ -4,6 +4,7 @@ import { Board, UNCLAIMED, PLAYER, COMPUTER } from './board';
   selector: 'my-app',
   template: `
     <h1>{{title}}</h1>
+    <h3>{{board.currentPlayerText}}'s Turn</h3>
     <div *ngIf="board.winner">
     {{board.winner}} wins!
     </div>
@@ -18,5 +19,4 @@ export class AppComponent {
     restartGame() {
         this.board.restartGame();
     }
-
 }
