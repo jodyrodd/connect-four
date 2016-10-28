@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Board, UNCLAIMED } from './board';
+import { AiPlayer } from './ai';
 
 @Component({
   selector: 'game-board',
@@ -15,11 +16,13 @@ import { Board, UNCLAIMED } from './board';
 export class GameBoardComponent {
     @Input()
     board: Board;
+    aiPlayer = new AiPlayer;
 
     getColumnClick(col) {
         console.log("received event " + col);
         if(this.board.playerMove(col) && this.gameActive()) {
-            this.board.computerMove();
+          var col = this.aiPlayer.getMove(this.board);
+          this.board.computerMove(col);
         }
     }
 

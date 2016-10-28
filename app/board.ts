@@ -1,59 +1,81 @@
-export const UNCLAIMED = -1;
-export const PLAYER = 1;
-export const COMPUTER = 0;
+export const UNCLAIMED = 0;
+export const PLAYER = -1;
+export const COMPUTER = 1;
 
 export class Cell {
-    row: number
-    col: number
     owner: number
 
-    constructor(row,col) {
-        this.row = row;
-        this.col = col;
+    constructor() {
         this.owner = UNCLAIMED;
     }
 
 }
 
-export class Row {
-    id: number;
-    cells: Cell[];
 
-    constructor(id) {
-        this.id = id;
-        this.cells = [
-            new Cell(this.id, 0),
-            new Cell(this.id, 1),
-            new Cell(this.id, 2),
-            new Cell(this.id, 3),
-            new Cell(this.id, 4),
-            new Cell(this.id, 5),
-            new Cell(this.id, 6),
-        ]
+export class Row {
+    cells: Cell[];
+    cellsPerRow = 7;
+
+    constructor() {
+        let cells: Cell[] = [];
+        for(let cell = 0; cell < this.cellsPerRow; cell++) {
+            cells.push(new Cell);
+        }
+        this.cells = cells;
+    }
+
+    getRowState() {
+        return this.cells.map(cell => cell.owner);
+    }
+
+    setRowState(values: number[]) {
+        for(let cell = 0; cell < this.cellsPerRow; cell++) {
+            this.cells[cell].owner = values[cell];
+        }
     }
 }
 
 export class Board {
     rows: Row[];
+    rowsOnBoard = 6;
+    winCount = 4;
     winner: string;
+    currentPlayer: number;
 
     constructor() {
-        this.rows = [
-            new Row(0),
-            new Row(1),
-            new Row(2),
-            new Row(3),
-            new Row(4),
-            new Row(5)
-        ]
+        let rows: Row[] = [];
+        for(let row = 0; row < this.rowsOnBoard; row++) {
+            rows.push(new Row)
+        }
+        this.rows = rows;
+    }
+
+    copy() {
+        let newBoard = new Board;
+        for(let row = 0; row < this.rowsOnBoard; row++) {
+            newBoard.rows[row].setRowState(this.rows[row].getRowState());
+        }
+        return newBoard;
     }
 
     getOwner(row, col) {
+        if(row < 0 || row > 5 || this.rows === undefined)
+        {
+            console.log("Help!");
+        }
         return this.rows[row].cells[col].owner;
     }
 
     setOwner(row, col, owner) {
         this.rows[row].cells[col].owner = owner;
+    }
+
+    serializeBoard() {
+        let result = "";
+        this.rows.forEach(row => {
+            result = result + row.getRowState().join('');
+        })
+        return result;
     }
 
     restartGame() {
@@ -65,21 +87,28 @@ export class Board {
         this.winner = undefined;
     }
 
+    availableMoves() {
+        let result = [];
+        this.rows[0].cells.forEach((cell, i) => {
+            if(cell.owner === UNCLAIMED) {
+                result.push(i);
+            }
+        });
+        return result;
+    }
+
     validMove(col) {
         //check that at least one cell is open
         return this.getOwner(0, col) === UNCLAIMED;
     }
 
     playerMove(col) {
-        console.log("Player Move " + col);
         if(!this.validMove(col)) return false;
         this.move(PLAYER, col);
         return true;
     }
 
-    computerMove() {
-        var col = Math.floor((Math.random() * 6) + 0);
-        console.log("Computer Move " + col);
+    computerMove(col) {
         this.move(COMPUTER, col);
     }
 
@@ -88,13 +117,12 @@ export class Board {
         var row;
         for(row=5; row >= 0; row--) {
             if(this.getOwner(row, col) === UNCLAIMED) {
-                //unowned cell
-                console.log("empty cell at row=" + row + ", col = " + col);
                 this.setOwner(row, col, owner);
                 break;
             }
         }
-        this.checkForWin(row, col, owner);
+        if(row !== -1) this.checkForWin(row, col, owner);
+        return row;
     }
 
     declareWinner(owner) {
@@ -113,7 +141,7 @@ export class Board {
         }
     }
 
-    checkForWin(tokenRow, tokenCol, owner) {
+    checkForWin(tokenRow, tokenCol, owner, winCount = this.winCount) {
         console.log("checking for a win");
         var count = 0;
         var row,
@@ -123,13 +151,12 @@ export class Board {
 
         //check row
         for(col = 0; col < 7; col++) {
-            console.log("row checking row="+row+" col="+col+" count="+count);
             if(this.getOwner(tokenRow, col) === owner) {
                 count++;
             } else {
                 count = 0;
             }
-            if(count === 4) {
+            if(count === winCount) {
                 this.declareWinner(owner);
                 return;
             }
@@ -138,13 +165,12 @@ export class Board {
         //check col
         count = 0;
         for(row = 5;row > -1;row--) {
-            console.log("col checking row="+row+" col="+col+" count="+count);
             if(this.getOwner(row, tokenCol) === owner) {
                 count++;
             } else {
                 count = 0;
             }
-            if(count === 4) {
+            if(count === winCount) {
                 this.declareWinner(owner);
                 return;
             }
@@ -165,13 +191,12 @@ export class Board {
         }
         for(row = originRow, col = originCol;
             row < 6  && col < 7; row++,col++) {
-            console.log("left diag checking row="+row+" col="+col+" count="+count);
             if(this.getOwner(row, col) === owner) {
                 count++;
             } else {
                 count = 0;
             }
-            if(count === 4) {
+            if(count === winCount) {
                 this.declareWinner(owner);
                 return;
             }
@@ -182,13 +207,12 @@ export class Board {
         originCol = tokenCol-(originRow-tokenRow);
         for(col=originCol, row=originRow;
             row > -1 && col < 7; row--,col++) {
-            console.log("right diag checking row="+row+" col="+col+" count="+count);
             if(this.getOwner(row, col) === owner) {
                 count++;
             } else {
                 count = 0;
             }
-            if(count === 4) {
+            if(count === winCount) {
                 this.declareWinner(owner);
                 return;
             }
