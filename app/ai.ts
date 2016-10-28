@@ -1,13 +1,14 @@
 import { Board, UNCLAIMED, PLAYER, COMPUTER } from './board';
 
 export class AiPlayer {
-    maxDepth = 2;
-    examinedStates: Object;
+    maxDepth = 8;
+    iterations = 0;
 
     getMove(gameState: Board) {
-        this.examinedStates = {};
-        var move = this.evaluateGameState(gameState);
-        return move["move"];
+        this.iterations = 0;
+        let result = this.maxPlay(gameState);
+        console.log("Iterations run = " + this.iterations);
+        return result["move"];
     }
 
     cellsPerCol(gameState: Board, col) {
@@ -29,44 +30,68 @@ export class AiPlayer {
         return (result.length > 0 ? result : [3]);
     }
 
-    evaluateGameState(gameState: Board, player = COMPUTER, depth = this.maxDepth) {
-        let rtn = this.examinedStates[gameState.serializeBoard()];
-        if(rtn !== undefined) return rtn;
-        var availableMoves = this.concentrationMoves(gameState);
+    maxPlay(gameState: Board, depth = this.maxDepth, alpha = undefined, beta = undefined): Object {
+        let availableMoves = this.concentrationMoves(gameState);
 
-        if(depth === 0 || availableMoves.length === 0) {
-            return { move: null, score: 0 }
+        let score = gameState.scoreBoard();
+
+        if(depth === 0 || availableMoves.length === 0 || Math.abs(score) === gameState.maxScore) {
+            return { move: null, score: score};
         }
 
-        let bestMove, bestScore;
-        let fn = player === COMPUTER ? Math.max : Math.min;
+        let maxMove = null;
+        let maxScore = -9999;
 
         for(let move of availableMoves) {
             let newGameState = gameState.copy();
-            let row = newGameState.move(player,move);
-            var score = 0;
-            if(newGameState.winner !== undefined) {
-                score = 1000*player;
-            } else {
-                var evaluatedState = this.evaluateGameState(newGameState, player*-1, (depth - 1));
-                score = evaluatedState.score;
-                newGameState.checkForWin(row, move, player, 3);
-                if(newGameState.winner !== undefined) {
-                    //this move gives 3 in a row, let's favor this move
-                    score = fn(score, 750*player);
-                }
-            }
-            if (bestScore === undefined ||
-                bestScore !== fn(bestScore, score) ||
-                (bestScore === score && Math.random() >= .8)) {
-                bestScore = score;
-                bestMove = move;
+            newGameState.computerMove(move);
+
+            this.iterations++;
+
+            let evaluation = this.minPlay(newGameState, (depth-1), alpha, beta);
+
+            if(maxMove === null || evaluation["score"] > maxScore) {
+                maxMove = move;
+                maxScore = evaluation["score"];
+                alpha = maxScore;
             }
 
+            if(alpha >= beta) {
+                return {move: maxMove, score: maxScore};
+            }
         }
-        let results = { move: bestMove, score: bestScore };
-        this.examinedStates[gameState.serializeBoard()] = results;
-        return results;
+        return {move: maxMove, score: maxScore};
+    }
+
+    minPlay(gameState: Board, depth, alpha, beta): Object {
+       let availableMoves = this.concentrationMoves(gameState);
+
+        let score = gameState.scoreBoard();
+
+        if(depth === 0 || availableMoves.length === 0 || Math.abs(score) === gameState.maxScore) {
+            return { move: null, score: score};
+        }
+
+        let minMove = null;
+        let minScore = 9999;
+
+        for(let move of availableMoves) {
+            let newGameState = gameState.copy();
+            newGameState.playerMove(move);
+
+            let evaluation = this.maxPlay(newGameState, (depth-1), alpha, beta);
+
+            if(minMove === null || evaluation["score"] < minScore) {
+                minMove = move;
+                minScore = evaluation["score"];
+                beta = minScore;
+            }
+
+            if(alpha >= beta) {
+                return {move: minMove, score: minScore};
+            }
+        }
+        return {move: minMove, score: minScore};
     }
 
 }

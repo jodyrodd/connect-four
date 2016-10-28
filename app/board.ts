@@ -41,6 +41,7 @@ export class Board {
     winCount = 4;
     winner: string;
     currentPlayer: number;
+    maxScore = 10000;
 
     constructor() {
         let rows: Row[] = [];
@@ -113,7 +114,6 @@ export class Board {
     }
 
     move(owner, col) {
-        console.log("Move received player - " + owner + " column - " + col);
         var row;
         for(row=5; row >= 0; row--) {
             if(this.getOwner(row, col) === UNCLAIMED) {
@@ -121,13 +121,11 @@ export class Board {
                 break;
             }
         }
-        if(row !== -1) this.checkForWin(row, col, owner);
+        if(Math.abs(this.scoreBoard()) == this.maxScore) this.declareWinner(owner);
         return row;
     }
 
     declareWinner(owner) {
-        console.log("Player " + owner + " wins!");
-
         switch(owner) {
             case UNCLAIMED:
                 this.winner = undefined;
@@ -141,81 +139,70 @@ export class Board {
         }
     }
 
-    checkForWin(tokenRow, tokenCol, owner, winCount = this.winCount) {
-        console.log("checking for a win");
-        var count = 0;
-        var row,
-            col,
-            originRow,
-            originCol;
+    checkForWin(row, col, deltaRow, deltaCol) {
+        let player = 0;
+        let computer = 0;
 
-        //check row
-        for(col = 0; col < 7; col++) {
-            if(this.getOwner(tokenRow, col) === owner) {
-                count++;
-            } else {
-                count = 0;
+        for(let i = 0; i < 4; i++) {
+            switch(this.getOwner(row, col)) {
+                case PLAYER:
+                    player++;
+                    break;
+                case COMPUTER:
+                    computer++;
+                    break;
             }
-            if(count === winCount) {
-                this.declareWinner(owner);
-                return;
-            }
+            row += deltaRow;
+            col += deltaCol;
         }
 
-        //check col
-        count = 0;
-        for(row = 5;row > -1;row--) {
-            if(this.getOwner(row, tokenCol) === owner) {
-                count++;
-            } else {
-                count = 0;
-            }
-            if(count === winCount) {
-                this.declareWinner(owner);
-                return;
-            }
-        }
-
-
-        //check diagonals
-        count = 0;
-        if(tokenRow < tokenCol) {
-            originRow = 0;
-            originCol = tokenCol - tokenRow;
-        } else if (tokenRow > tokenCol) {
-            originCol = 0;
-            originRow = tokenRow - tokenCol;
+        if(player === 4) {
+            return -this.maxScore;
+        } else if(computer === 4) {
+            return this.maxScore;
         } else {
-            originRow = 0;
-            originCol = 0;
-        }
-        for(row = originRow, col = originCol;
-            row < 6  && col < 7; row++,col++) {
-            if(this.getOwner(row, col) === owner) {
-                count++;
-            } else {
-                count = 0;
-            }
-            if(count === winCount) {
-                this.declareWinner(owner);
-                return;
-            }
-        }
-
-        count = 0;
-        originRow = Math.min(tokenRow+tokenCol, 5);
-        originCol = tokenCol-(originRow-tokenRow);
-        for(col=originCol, row=originRow;
-            row > -1 && col < 7; row--,col++) {
-            if(this.getOwner(row, col) === owner) {
-                count++;
-            } else {
-                count = 0;
-            }
-            if(count === winCount) {
-                this.declareWinner(owner);
-                return;
-            }
+            return computer;
         }
     }
+
+    scoreBoard() {
+        let points = 0;
+
+        //check for vertical wins/points
+        for(let row = 0; row < 3; row++) {
+            for(let col = 0; col < 7; col++) {
+                let score = this.checkForWin(row, col, 1, 0);
+                if(Math.abs(score) === this.maxScore) return score;
+                points += score;
+            }
+        }
+
+        //check horizontal
+        for(let row = 0; row < 6; row++) {
+            for(let col = 0; col < 4; col++) {
+                let score = this.checkForWin(row, col, 0, 1);
+                if(Math.abs(score) === this.maxScore) return score;
+                points += score;
+            }
+        }
+        //check left to right down diagonal
+        for(let row = 0; row < 3; row++) {
+            for(let col = 0; col < 4; col++) {
+                let score = this.checkForWin(row, col, 1, 1);
+                if(Math.abs(score) === this.maxScore) return score;
+                points += score;
+            }
+        }
+        //check right to left down diagonal
+        for(let row = 3; row < 6; row++) {
+            for(let col = 0; col < 4; col++) {
+                let score = this.checkForWin(row, col, -1, 1);
+                if(Math.abs(score) === this.maxScore) return score;
+                points += score;
+            }
+        }
+
+        return points;
+    }
+
 }
