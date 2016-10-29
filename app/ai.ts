@@ -1,13 +1,13 @@
 import { Board, UNCLAIMED, PLAYER, COMPUTER } from './board';
 
 export class AiPlayer {
-    maxDepth = 8;
+    maxDepth = 4;
     iterations = 0;
     evaulatedBoards = {};
 
     move(gameState: Board) {
         return new Promise((resolve, reject) => {
-            setTimeout(() {
+            setTimeout(() => {
                 this.iterations = 0;
                 this.evaulatedBoards = {};
                 let result = this.maxPlay(gameState);

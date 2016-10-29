@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { PLAYER } form './board'
 
 export class Column {
     id: number;
@@ -33,7 +32,7 @@ const COLUMNS: Column[] = [
 })
 export class HeadComponent {
     @Input() gameActive: boolean;
-    @Input() waitingForPlayer: number = true;
+    @Input() waitingForPlayer: boolean = true;
     @Output() notifyParent: EventEmitter<any> = new EventEmitter();
     columns = COLUMNS;
 

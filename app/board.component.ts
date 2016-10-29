@@ -17,7 +17,7 @@ import { AiPlayer } from './ai';
 })
 export class GameBoardComponent {
     @Input() board: Board;
-    aiPlayer = new AiPlayer;
+    @Input() aiPlayer: AiPlayer;
 
     getColumnClick(col) {
         console.log("received event " + col);

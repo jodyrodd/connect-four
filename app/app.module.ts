@@ -4,9 +4,10 @@ import { AppComponent }   from './app.component';
 import { GameBoardComponent } from './board.component';
 import { RowComponent } from './row.component';
 import { HeadComponent } from './head.component';
+import { FormsModule }   from '@angular/forms';
 
 @NgModule({
-  imports:      [ BrowserModule ],
+  imports:      [ BrowserModule, FormsModule ],
   declarations: [
     AppComponent,
     GameBoardComponent,
