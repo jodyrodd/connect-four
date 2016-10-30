@@ -2,16 +2,13 @@ import { Board, UNCLAIMED, PLAYER, COMPUTER } from './board';
 
 export class AiPlayer {
     maxDepth = 4;
-    iterations = 0;
     evaulatedBoards = {};
 
     move(gameState: Board) {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                this.iterations = 0;
                 this.evaulatedBoards = {};
                 let result = this.maxPlay(gameState);
-                console.log("Iterations run = " + this.iterations);
                 gameState.computerMove(result["move"]);
             }, 500);
         });
@@ -56,8 +53,6 @@ export class AiPlayer {
             let newGameState = gameState.copy();
             newGameState.computerMove(move);
 
-            this.iterations++;
-
             let evaluation = this.minPlay(newGameState, (depth-1), alpha, beta);
 
             if(maxMove === null || evaluation["score"] > maxScore) {
@@ -65,6 +60,8 @@ export class AiPlayer {
                 maxScore = evaluation["score"];
                 alpha = maxScore;
             }
+
+            console.log("MAX alpha="+alpha+" beta="+beta);
 
             if(alpha >= beta) {
                 rtn = {move: maxMove, score: maxScore};
@@ -105,6 +102,7 @@ export class AiPlayer {
                 beta = minScore;
             }
 
+            console.log("MIN alpha="+alpha+" beta="+beta);
             if(alpha >= beta) {
                 rtn = {move: minMove, score: minScore};
                 this.evaulatedBoards["MIN"+gameState.serializeBoard()] = rtn;

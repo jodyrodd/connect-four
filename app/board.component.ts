@@ -20,9 +20,7 @@ export class GameBoardComponent {
     @Input() aiPlayer: AiPlayer;
 
     getColumnClick(col) {
-        console.log("received event " + col);
-        this.board.playerMove(col);
-        if(this.gameActive()) {
+        if(this.board.playerMove(col) && this.gameActive()) {
           this.aiPlayer.move(this.board);
         }
     }

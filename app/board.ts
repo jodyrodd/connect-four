@@ -51,7 +51,7 @@ export class Board {
         }
         this.rows = rows;
         this.currentPlayer = PLAYER;
-        this.setCurrentPlayerText();
+        this.currentPlayerText = this.getPlayerText();
     }
 
     copy() {
@@ -82,33 +82,11 @@ export class Board {
         return result;
     }
 
-    restartGame() {
-        for(var row=5;row >= 0;row--) {
-            for(var col=0;col<7;col++) {
-                this.setOwner(row, col, UNCLAIMED);
-            }
-        }
-        this.currentPlayer = PLAYER;
-        this.winner = undefined;
-    }
-
     changePlayer() {
         this.currentPlayer = this.currentPlayer % 2 ? PLAYER : COMPUTER;
-        this.setCurrentPlayerText();
+        this.currentPlayerText = this.getPlayerText();
     }
 
-    setCurrentPlayerText() {
-      let curPlayer = "";
-      switch(this.currentPlayer) {
-        case PLAYER:
-          curPlayer = "Player";
-          break;
-        case COMPUTER:
-          curPlayer = "Computer";
-          break;
-      }
-      this.currentPlayerText = curPlayer;
-    }
 
     availableMoves() {
         let result = [];
@@ -129,6 +107,7 @@ export class Board {
         if(!this.validMove(col)) return false;
         this.move(PLAYER, col);
         this.changePlayer();
+        return true;
     }
 
     computerMove(col) {
@@ -148,18 +127,18 @@ export class Board {
         return row;
     }
 
-    declareWinner(owner) {
-        switch(owner) {
-            case UNCLAIMED:
-                this.winner = undefined;
-                break;
+    getPlayerText(player = this.currentPlayer): string {
+        switch(player) {
             case PLAYER:
-                this.winner = "Player";
-                break;
+                return "Player";
             case COMPUTER:
-                this.winner = "Computer";
-                break;
+                return "Computer";
         }
+        return "";
+    }
+
+    declareWinner(owner) {
+        this.winner = this.getPlayerText(owner);
     }
 
     checkForWin(row, col, deltaRow, deltaCol) {
@@ -187,7 +166,7 @@ export class Board {
         } else if(computer === 4) {
             return this.maxScore;
         } else {
-            return computer*Math.max(movesInARow, 1);
+            return computer;//*Math.max(movesInARow, 1);
         }
     }
 

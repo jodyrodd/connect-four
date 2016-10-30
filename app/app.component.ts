@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { Board, UNCLAIMED, PLAYER, COMPUTER } from './board';
+import { Component, OnInit } from '@angular/core';
+import { BoardService } from './board.service';
+import { Board, COMPUTER } from './board';
 import { AiPlayer } from './ai';
 
 
@@ -10,7 +11,9 @@ import { AiPlayer } from './ai';
     <div class="row">
         <div class="col-md-4">
         <div *ngIf="board.winner == undefined">
-            <h3>{{board.currentPlayerText}}'s Turn</h3>
+            <h3>{{board.currentPlayerText}}'s Turn
+                <img src="./ajax-loader.gif" *ngIf="board.currentPlayer">
+            </h3>
         </div>
         <div *ngIf="board.winner">
             <h2>{{board.winner}} wins!</h2>
@@ -25,14 +28,21 @@ import { AiPlayer } from './ai';
             </div>
         </div>
     </div>
-    `
+    `,
+    providers: [BoardService]
 })
 export class AppComponent {
     title = 'Connect 4';
-    board = new Board;
+    board: Board;
     aiPlayer = new AiPlayer;
 
+    constructor(private boardService: BoardService) {}
+
+    ngOnInit(): void {
+        this.board = this.boardService.newBoard();
+    }
+
     restartGame() {
-        this.board.restartGame();
+        this.board = this.boardService.newBoard();
     }
 }
