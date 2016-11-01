@@ -21,12 +21,26 @@ export class BoardService {
             .catch(this.handleError);
     }
 
-    saveBoard(board: Board): Board {
-        return null;
+    saveBoard(board: Board) {
+        let url = this.boardUrl + "/" + board.uuid;
+        let data = {
+            "currentPlayer": board.currentPlayer,
+            "rows": board.serializeBoard()
+        };
+        return this.http
+            .put(url, JSON.stringify(data), {headers: this.headers})
+            .toPromise()
+            .catch(this.handleError);
     }
 
-    loadBoard(id): Board {
-        return null;
+    loadBoard(id): Promise<Board> {
+        let url = this.boardUrl + "/" + id;
+        return this.http
+            .get(url, {})
+            .toPromise()
+            .then(res =>
+                new Board(res.json()))
+            .catch(this.handleError);
     }
 
     private handleError(error: any): Promise<any> {

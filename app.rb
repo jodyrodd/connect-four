@@ -10,6 +10,7 @@ end
 
 options "*" do
   response.headers["Allow"] = "HEAD,GET,PUT,POST,DELETE,OPTIONS"
+  response.headers["Access-Control-Allow-Methods"] = "HEAD,GET,PUT,POST,DELETE,OPTIONS"
 
   response.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
   response.headers["Access-Control-Allow-Origin"] = "*"
@@ -59,8 +60,9 @@ put '/api/board/:id' do
     status 404
     return {success: false, error: "#{params['id']} not found"}
   end
-  board.current_player = params['currentPlayer']
-  board.rows = params['rows']
+  data = JSON.parse(request.body.read)
+  board.currentPlayer = data["currentPlayer"]
+  board.rows = data["rows"]
   board.save
   board.to_json
 end

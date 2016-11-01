@@ -4,12 +4,13 @@ export class AiPlayer {
     maxDepth = 4;
     evaulatedBoards = {};
 
-    move(gameState: Board) {
+    move(gameState: Board): Promise<Board> {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.evaulatedBoards = {};
                 let result = this.maxPlay(gameState);
                 gameState.computerMove(result["move"]);
+                resolve(gameState);
             }, 500);
         });
     }
@@ -61,8 +62,6 @@ export class AiPlayer {
                 alpha = maxScore;
             }
 
-            console.log("MAX alpha="+alpha+" beta="+beta);
-
             if(alpha >= beta) {
                 rtn = {move: maxMove, score: maxScore};
                 this.evaulatedBoards["MAX"+gameState.serializeBoard()] = rtn;
@@ -102,7 +101,6 @@ export class AiPlayer {
                 beta = minScore;
             }
 
-            console.log("MIN alpha="+alpha+" beta="+beta);
             if(alpha >= beta) {
                 rtn = {move: minMove, score: minScore};
                 this.evaulatedBoards["MIN"+gameState.serializeBoard()] = rtn;

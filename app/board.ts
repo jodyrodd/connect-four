@@ -160,17 +160,15 @@ export class Board {
     checkForWin(row, col, deltaRow, deltaCol) {
         let player = 0;
         let computer = 0;
-        let movesInARow = 0;
 
         for(let i = 0; i < 4; i++) {
             switch(this.getOwner(row, col)) {
                 case PLAYER:
                     player++;
-                    movesInARow = 0;
+                    computer = 0;
                     break;
                 case COMPUTER:
                     computer++;
-                    movesInARow++;
                     break;
             }
             row += deltaRow;
@@ -182,7 +180,7 @@ export class Board {
         } else if(computer === 4) {
             return this.maxScore;
         } else {
-            return computer;//*Math.max(movesInARow, 1);
+            return computer;
         }
     }
 
