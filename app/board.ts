@@ -43,22 +43,38 @@ export class Board {
     currentPlayer: number;
     currentPlayerText: string;
     maxScore = 10000;
+    uuid: string;
 
-    constructor() {
+    constructor(loadBoard) {
+        this.currentPlayer = loadBoard['currentPlayer'] === null ? PLAYER : loadBoard['currentPlayer'];
+        this.uuid = loadBoard['uuid'];
+
         let rows: Row[] = [];
+        let loadRows: number[][] = [];
+        if(loadBoard['rows'] !== null && loadBoard['rows'] !== undefined) {
+            let rows = loadBoard['rows'].split(/\[(.*?)\]/).filter(Boolean);
+            for(let row of rows) {
+                loadRows.push(row.split(',').map(Number));
+            }
+            console.log(loadRows);
+        }
         for(let row = 0; row < this.rowsOnBoard; row++) {
             rows.push(new Row)
+            if(loadRows.length > 0) {
+                rows[row].setRowState(loadRows[row]);
+            }
         }
         this.rows = rows;
-        this.currentPlayer = PLAYER;
         this.currentPlayerText = this.getPlayerText();
     }
 
     copy() {
-        let newBoard = new Board;
-        for(let row = 0; row < this.rowsOnBoard; row++) {
-            newBoard.rows[row].setRowState(this.rows[row].getRowState());
+        let params = {
+            'currentPlayer': this.currentPlayer,
+            'uuid': this.uuid,
+            'rows': this.serializeBoard()
         }
+        let newBoard = new Board(params);
         return newBoard;
     }
 
@@ -77,7 +93,7 @@ export class Board {
     serializeBoard() {
         let result = "";
         this.rows.forEach(row => {
-            result = result + row.getRowState().join('');
+            result = result + "[" + row.getRowState().join(',') + "]";
         })
         return result;
     }

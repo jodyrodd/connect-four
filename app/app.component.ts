@@ -10,15 +10,17 @@ import { AiPlayer } from './ai';
     <h1>{{title}}</h1>
     <div class="row">
         <div class="col-md-4">
-        <div *ngIf="board.winner == undefined">
-            <h3>{{board.currentPlayerText}}'s Turn
-                <img src="./ajax-loader.gif" *ngIf="board.currentPlayer">
-            </h3>
-        </div>
-        <div *ngIf="board.winner">
-            <h2>{{board.winner}} wins!</h2>
-        </div>
-        <game-board [board]="board" [aiPlayer]="aiPlayer"></game-board>
+        <div *ngIf="board != undefined">
+            <div *ngIf="board.winner == undefined">
+                <h3>{{board.currentPlayerText}}'s Turn
+                    <img src="./ajax-loader.gif" *ngIf="board.currentPlayer">
+                </h3>
+            </div>
+            <div *ngIf="board.winner">
+                <h2>{{board.winner}} wins!</h2>
+            </div>
+            <game-board [board]="board" [aiPlayer]="aiPlayer"></game-board>
+            </div>
         </div>
         <div class="col-md-4">
             <div><button (click)="restartGame()">New Game</button>
@@ -39,10 +41,11 @@ export class AppComponent {
     constructor(private boardService: BoardService) {}
 
     ngOnInit(): void {
-        this.board = this.boardService.newBoard();
+        this.boardService.newBoard().then(board =>
+            this.board = board);
     }
 
     restartGame() {
-        this.board = this.boardService.newBoard();
+        this.boardService.newBoard().then(board => this.board = board);
     }
 }

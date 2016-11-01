@@ -1,0 +1,11 @@
+source 'https://rubygems.org'
+
+gem 'sinatra'
+gem 'sinatra-cross_origin'
+gem 'foreman'
+gem 'json'
+gem 'thin'
+gem 'sqlite3'
+gem 'data_mapper'
+gem 'dm-sqlite-adapter'
+gem 'dm-types', '1.2.2'
