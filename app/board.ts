@@ -56,7 +56,6 @@ export class Board {
             for(let row of rows) {
                 loadRows.push(row.split(',').map(Number));
             }
-            console.log(loadRows);
         }
         for(let row = 0; row < this.rowsOnBoard; row++) {
             rows.push(new Row)

@@ -24,12 +24,12 @@ export class AiPlayer {
     }
 
     concentrationMoves(gameState: Board) {
-        var moves = gameState.availableMoves();
+        const moves = [0,1,2,3,4,5,6]
         var concentration = moves.map(col => this.cellsPerCol(gameState, col));
         var result = moves.filter(col =>
-            (concentration[col] > 0) ||
-            (col > 0 && concentration[col-1] > 0 ) ||
-            (col < 6 && concentration[col+1]) > 0
+            concentration[col] < 6 && (concentration[col] > 0 ||
+            (col > 0 && concentration[col-1] > 0) ||
+            (col < 6 && concentration[col+1] > 0))
         )
         return (result.length > 0 ? result : [3]);
     }

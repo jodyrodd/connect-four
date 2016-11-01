@@ -39,7 +39,6 @@ export class HeadComponent {
 
     onClick(column): void {
         if(!this.gameActive || !this.waitingForPlayer) return;
-        console.log("Column clicked - " + column.id);
         this.notifyParent.emit(column.id);
     }
 }
