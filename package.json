@@ -4,10 +4,11 @@
   "description": "A game of Connect 4",
   "main": "server.js",
   "scripts": {
-    "start": "tsc && concurrently \"tsc -w\" \"lite-server\" ",
+    "start": "node server.js",
     "lite": "lite-server",
     "tsc": "tsc",
-    "tsc:w": "tsc -w"
+    "tsc:w": "tsc -w",
+    "postinstall": "tsc"
   },
   "dependencies": {
     "@angular/common": "~2.1.1",
@@ -19,19 +20,23 @@
     "@angular/platform-browser-dynamic": "~2.1.1",
     "@angular/router": "~3.1.1",
     "@angular/upgrade": "~2.1.1",
+    "@types/core-js": "^0.9.34",
+    "@types/node": "^6.0.45",
     "angular-in-memory-web-api": "~0.1.13",
+    "body-parser": "^1.15.2",
     "bootstrap": "^3.3.7",
+    "concurrently": "^3.0.0",
     "core-js": "^2.4.1",
+    "express": "^4.14.0",
+    "lite-server": "^2.2.2",
+    "mongodb": "^2.2.11",
+    "morgan": "^1.7.0",
+    "pg": "^6.1.0",
     "reflect-metadata": "^0.1.8",
     "rxjs": "5.0.0-beta.12",
     "systemjs": "0.19.39",
+    "typescript": "^2.0.3",
+    "uuid": "^2.0.3",
     "zone.js": "^0.6.25"
-  },
-  "devDependencies": {
-    "@types/core-js": "^0.9.34",
-    "@types/node": "^6.0.45",
-    "concurrently": "^3.0.0",
-    "lite-server": "^2.2.2",
-    "typescript": "^2.0.3"
   }
 }
