@@ -46,7 +46,7 @@ export class Board {
     uuid: string;
 
     constructor(loadBoard) {
-        this.currentPlayer = loadBoard['currentPlayer'] === null ? PLAYER : loadBoard['currentPlayer'];
+        this.currentPlayer = loadBoard['current_player'] === null ? PLAYER : loadBoard['current_player'];
         this.uuid = loadBoard['uuid'];
 
         let rows: Row[] = [];
@@ -69,7 +69,7 @@ export class Board {
 
     copy() {
         let params = {
-            'currentPlayer': this.currentPlayer,
+            'current_player': this.currentPlayer,
             'uuid': this.uuid,
             'rows': this.serializeBoard()
         }

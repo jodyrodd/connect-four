@@ -8,7 +8,7 @@ import 'rxjs/add/operator/toPromise';
 export class BoardService {
 
     private headers = new Headers({'Content-Type': 'application/json'});
-    private boardUrl = 'http://localhost:4567/api/board';
+    private boardUrl = '/api/board';
 
     constructor(private http: Http) { }
 
@@ -24,7 +24,7 @@ export class BoardService {
     saveBoard(board: Board) {
         let url = this.boardUrl + "/" + board.uuid;
         let data = {
-            "currentPlayer": board.currentPlayer,
+            "current_player": board.currentPlayer,
             "rows": board.serializeBoard()
         };
         return this.http
